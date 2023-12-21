@@ -50,14 +50,7 @@ typedef struct smmObject
       int energy;
 } smmObject_t;   
 //2. 구조체 배열 변수 정의
-smmObject_t smm_node[MAX_NODE];
-
-#if 0 
-static char smmObj_name[MAX_NODE][MAX_CHARNAME];
-static int smmObj_type[MAX_NODE];
-static int smmObj_credit[MAX_NODE];
-static int smmObj_energy[MAX_NODE];
-#endif
+static smmObject_t smm_node[MAX_NODE];
 
 static int smmObj_noNode=0;
 
@@ -65,13 +58,6 @@ static int smmObj_noNode=0;
 //object generation-구조체 정의 
 void smmObj_genNode(char* name, int type, int credit, int energy)//이름, 강의, 학점, 에너지 구조체 
 {
-    #if 0 
-    strcpy(smmObj_name[smmObj_noNode], name);
-    smmObj_type[smmObj_noNode] = type;
-    smmObj_credit[smmObj_noNode] = credit;
-    smmObj_energy[smmObj_noNode] = energy;
-    #endif
-    
     strcpy(smm_node[smmObj_noNode].name, name);//pointer라서 strcpy 
     smm_node[smmObj_noNode].type = type;
     smm_node[smmObj_noNode].credit = credit;
