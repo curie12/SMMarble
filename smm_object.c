@@ -28,7 +28,7 @@ char* smmObj_getTypeName(int type)
       return (char*)smmNodeName[type];
 }
 
-typedef enum smmObjGrade {
+/*typedef enum smmObjGrade {
     smmObjGrade_Ap = 0,
     smmObjGrade_A0,
     smmObjGrade_Am,
@@ -38,38 +38,70 @@ typedef enum smmObjGrade {
     smmObjGrade_Cp,
     smmObjGrade_C0,
     smmObjGrade_Cm
-} smmObjGrade_e;
+} smmObjGrade_e;*/
 
 
 //1. 구조체 형식 정의 
 typedef struct smmObject
 {
       char name[MAX_CHARNAME];
+      smmObjType_e objType;
       int type;
       int credit;
       int energy;
+      smmObjGrade_e grade;
 } smmObject_t;   
 //2. 구조체 배열 변수 정의
-static smmObject_t smm_node[MAX_NODE];
-
-static int smmObj_noNode=0;
+//static smmObject_t smm_node[MAX_NODE];
+//static int smmObj_noNode=0;
 
 //3. 관련 함수 변경 
-//object generation-구조체 정의 
-void smmObj_genNode(char* name, int type, int credit, int energy)//이름, 강의, 학점, 에너지 구조체 
-{
-    strcpy(smm_node[smmObj_noNode].name, name);//pointer라서 strcpy 
-    smm_node[smmObj_noNode].type = type;
-    smm_node[smmObj_noNode].credit = credit;
-    smm_node[smmObj_noNode].energy = energy;
-    
-    smmObj_noNode++;
+//object generation
+void* smmObj_genObject(char* name, smmObjType_e objType, int type, int credit, int energy, smmObjGrade_e grade)
+{    
+    smmObject_t* ptr;
+
+    ptr = (smmObject_t*)malloc(sizeof(smmObject_t));
+
+    strcpy(ptr->name, name);
+    ptr->objType = objType;
+    ptr->type = type;
+    ptr->credit = credit;
+    ptr->energy = energy;
+    ptr->grade = grade;
+
+    return ptr;
 }
 
-char* smmObj_getNodeName(int node_nr) //smmObj_name주소에 접근해서 해당하는 문자열에 접근 ㄹㄹ  
+//3. 관련 함수 변경 
+char* smmObj_getNodeName(void* obj)
 {
-    return smm_node[node_nr].name;
+    smmObject_t* ptr = (smmObject_t*)obj;
+
+    return ptr->name;
 }
+
+//3. 관련 함수 변경 
+int smmObj_getNodeType(void* obj)
+{
+    smmObject_t* ptr = (smmObject_t*)obj;
+
+    return ptr->type;
+}
+int smmObj_getNodeCredit(void* obj)
+{
+    smmObject_t* ptr = (smmObject_t*)obj;
+
+    return ptr->credit;
+}
+int smmObj_getNodeEnergy(void* obj)
+{
+    smmObject_t* ptr = (smmObject_t*)obj;
+    
+    return ptr->energy;
+}
+
+#if 0
 int smmObj_getNodeType(int node_nr)
 {
     return smm_node[node_nr].type;
@@ -83,7 +115,7 @@ int smmObj_getNodeEnergy(int node_nr)
     return smm_node[node_nr].energy;
 }
 
-#if 0
+
 //member retrieving 검색중 
 
 //element to string
