@@ -27,7 +27,17 @@ char* smmObj_getTypeName(int type)
 {
       return (char*)smmNodeName[type];
 }
-
+/* grade :
+    A+,
+    A0,
+    A-,
+    B+,
+    B0,
+    B-,
+    C+,
+    C0,
+    C-
+*/
 /*typedef enum smmObjGrade {
     smmObjGrade_Ap = 0,
     smmObjGrade_A0,

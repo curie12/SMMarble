@@ -41,7 +41,7 @@ static char player_name[MAX_PLAYER][MAX_CHARNAME];
 
 //function prototypes
 #if 0
-int isGraduated(void); //check if any player is graduated
+//int isGraduated(void); //check if any player is graduated
 //void generatePlayers(int n, int initEnergy); //generate a new player
 
 //void printGrades(int player); //print grade history of the player
@@ -67,12 +67,66 @@ int isGraduated(void)
      }
      return cur_player[i].flag_graduate;//flag_graduate == 1 이면 게임 끝 
 }     
-     
-float calcAverageGrade(int player)
+   
+
+int findGrade(int player)//이전 학점 합계?? 
 {
-     int accumCredit;
-     
+      int i;
+      int pvgrade_total;
+      for (i=0;i<board_nr;i++)
+         {
+             void *board_Check = smmdb_getData(LISTNO_NODE, i);
+             pvgrade_total += printGrades(player) * smmObj_getNodeCredit(board_Check);
+         }
+      return pvgrade_total;           
 }
+
+void takeLecture(int player, char *lectureName, int credit)
+{
+     char class_answer;
+     int learnBefore(void)//이전수강경험 
+     {
+         int i;
+         int LB;//LEARNBEFORE
+         for (i=0;i<board_nr;i++)
+         {
+             void *boardCheck = smmdb_getData(LISTNO_NODE, i);
+             if(strcmp(smmObj_getNodeName(boardCheck), smmObj_getNodeName(&cur_player[player].position)) == 0)
+             {
+              LB = 1;
+              break;
+             }
+         }
+         return LB;
+     }
+     //1. player's energy >= class energy
+     if((cur_player[player].energy >= smmObj_getNodeEnergy( &cur_player[player].position )) &&
+     //2. never heard before-db 
+     (learnBefore()==0))
+     {
+          printf("Lecture %s(credit: %i, energy: %i) starts! Are you going to join? or drop?", smmObj_getNodeName(&cur_player[player].position), smmObj_getNodeCredit(&cur_player[player].position), smmObj_getNodeEnergy(&cur_player[player].position) );
+          scanf("%s", class_answer);
+          const char *join = "join";
+
+          if (strcmp(class_answer, join) == 0)
+          {
+          
+               srand((unsigned int)time(NULL));
+               int randomIndex = rand() % 9; //등급: (smmObjGrade_e)randomIndex
+               
+               float gradeValueslist[] = {4.3, 4.0, 3.7, 3.3, 3.0, 2.7, 2.3, 2.0, 1.7};
+               const char *gradeList[] = {"A+", "A0", "A-", "B+", "B0", "B-", "C+", "C0", "C-"};
+               
+               int total_grade = findGrade(player)+gradeValueslist[randomIndex]*smmObj_getNodeCredit(&cur_player[player].position);
+               printf("Player %s successfully takes the lecture %s with grade %s.(average: %0.6f, remained energy: %i",
+                              cur_player[player].name, smmObj_getNodeName(&cur_player[player].position), 
+                              gradelist[randomIndex], calcAverageGrade평균학점-지금들은것도 포함,
+                              cur_player[player].energy - smmObj_getNodeEnergy( cur_player[player].position )); 
+          else
+              printf("Player %s drops the lecture %s! ", cur_player[player].name, smmObj_getNodeName(cur_player[player].position));
+          }
+}smmGrade_e;
+
 void printGrades(int player)
 {
      int i;
@@ -156,13 +210,12 @@ void actionNode(int player)
                 cur_player[player].accumCredit += smmObj_getNodeCredit( boardPtr );
                 cur_player[player].energy -= smmObj_getNodeEnergy( boardPtr );
                 
-                
-                float calcAverageGrade성적!!! 
-                
                 //grade generation
+                //takeLecture 함수 
                 //수정해야함 
-                //void* smmObj_genObject(char* name, smmObjType_e objType, int type, int credit, int energy, smmObjGrade_e grade)
-                gradePtr = smmObj_genObject(name, smmObjType_grade?????, 0, smmObj_getNodeCredit( boardPtr ), 0, ??-학점계);//새로운 구조체 생성  
+                //void* smmObj_genObject(char* name, smmObjType_e objType??, int type, int credit, int energy, smmObjGrade_e grade)
+                
+                //gradePtr = smmObj_genObject(name, smmObjType_board, 0, smmObj_getNodeCredit( boardPtr ), 0, ??-학점계);//새로운 구조체 생성  
                 smmdb_addTail(LISTNO_OFFSET_GRADE + player, gradePtr);
             }
             break;
@@ -289,7 +342,7 @@ int main(int argc, const char * argv[]) {
      
 
     //3. SM Marble game starts ---------------------------------------------------------------------------------
-    while ( isGraduated != 1) //is anybody graduated?
+    while ( isGraduated(void) != 1) //is anybody graduated?
     {
         int die_result;
         
@@ -308,9 +361,9 @@ int main(int argc, const char * argv[]) {
         //4-5. next turn
         turn = (turn + 1)%player_nr;
         //지금 누구 차례인지출력
-        printf("\nThis is %s's turn : : : ", cur_player[turn].name); 
+        printf("\n This is %s's turn : : : ", cur_player[turn].name); 
     }
     free(cur_player);
-    system("PAUSE");
+    //system("PAUSE");
     return 0;
 }
